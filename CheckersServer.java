@@ -14,6 +14,7 @@ import java.awt.event.*;
 //There will be a checkers Server and Client
 //Server Starts the Game
 //SERVER IS THE BLACK PLAYER BECAUSE RED GOES FIRST
+//BLACK IS ON THE RIGHT SIDE AND RED IS ON THE LEFT SIDE
 class CheckersServer {
    public static int [][] pieces = new int [8][8];
    public static void main(String argv[]) throws Exception {
@@ -89,108 +90,103 @@ class CheckersServer {
             moveLength = moveLength - 2;
             numHops = moveLength / 3; 
             
-            if(numHops == 1) //only one move
-            {
-               temp = serverMove.charAt(0);
-               fromCol = temp - 65;
-               temp = serverMove.charAt(1);
-               fromRow = temp - 48;
-               temp = serverMove.charAt(3);
-               toCol = temp - 65;
-               temp = serverMove.charAt(4);
-               toRow = temp - 48;
+            //get moving piece
+            temp = serverMove.charAt(0);
+            fromCol = temp - 65;
+            temp = serverMove.charAt(1);
+            fromRow = temp - 48;
                
-               //Tell user if move is valid
+            //create substring
+            serverHops = serverMove.substring(2);
                
-               //CHANGE SO THAT USER IS HOPING THE PIECE AND NOT ONLY MOVING TO THE NEXT LOCATION 
-               if(pieces[fromCol][fromRow]!=1 || pieces[fromCol][fromRow]!=3) //valid piece square
-               {
-                 System.out.println("There is no piece at the location you selected.");
-                 continue; 
-               } 
-               else if(pieces[fromCol][fromRow]==1 && ((fromCol-1)!=toCol && ((fromRow+1)!=toRow || (fromRow-1)!=toRow))  ) //pawn moves
-               {
-                 System.out.println("Invalid Pawn Move");
-                 continue;
-               } 
-               else if(pieces[fromCol][fromRow]==3 && (((fromCol-1)!=toCol || (fromCol+1)!=toCol) && ((fromRow+1)!=toRow || (fromRow-1)!=toRow))  ) //king moves
-               {
-                 System.out.println("Invalid King Move");
-                 continue;
-               }
-               else if(toCol<0 || toRow<0 || toCol>8 || toRow>8) //outside the playing field
-               {
-                 System.out.println("Out of Bounds Move");
-                 continue;
-               }
-            }   
-            else
-            {
-               temp = serverMove.charAt(0);
-               fromCol = temp - 65;
-               temp = serverMove.charAt(1);
-               fromRow = temp - 48;
-               
-               //create substring
-               serverHops = serverMove.substring(2);
-               
-               //create array of toRow and toCol for number of hops and give them their values
-               int [] toRows = new int [numHops];
-               int [] toCols = new int [numHops];
-               int count = 1;
-               for(int i = 0; i<numHops; i++)
-               {
-                  toRows[i] = serverHops.charAt(count);
-                  toCols[i] = serverHops.charAt(count+1);
-                  count = count + 3;
-               }
-               
-               //for loop to check all hops to make sure all are valid before changing matrix values
-               
-               //if valid, for loop to go through each hop and make changes
-               
-               //
+            //create array of toRow and toCol for number of hops and give them their values
+            int [] toRows = new int [numHops+1];
+            int [] toCols = new int [numHops+1];
             
+            toRows[0] = fromRow;
+            toCols[0] = fromCol;
+            
+            int count = 1;
+            for(int i = 1; i<numHops+1; i++)
+            {
+               toRows[i] = serverHops.charAt(count);
+               toCols[i] = serverHops.charAt(count+1);
+               count = count + 3;
             }
-                
-            //Check to see if there is a another piece in the next square
-            //there is a piece but nothing past
             
-            
-            
-            //there is but the next spot is blocked
-            
-            /*Commented out to compile*/
-            //if((pieces[toCol][toRow]==2 || pieces[toCol][toRow]==4) && )
-            
-            
-            //there is a piece and something on the other side
-            
-            //there are multiple hops
-            
-            
-            
-            //Change Matrix value
-            
+            //assume move is valid until otherwise proven
+            valid = true;  
+          //if not king nor pawn
+          if(pieces[fromCol][fromRow]!=2 && pieces[fromCol][fromRow]!=4)
+          {
+               valid = false;
+               continue;
+          }
+          else if(pieces[fromCol][fromRow]==2)
+          {
+            //CHECK ALL HOPS: to make sure all are valid before changing matrix values
+            for(int i = 0; i < numHops; i++)
+            {               
+               //make sure next move does not place player out of the board area
+               
+               //make sure it is a valid pawn move
 
-            valid = true;
-         }
-         
-         
-         System.out.println("Server From  : " + fromCol + " " + fromRow);
-         System.out.println("Server To    : " + toCol + " " + toRow);
+                  //if move is (- 2 cols) and (+ or - 2 rows)
+                     //if there is not a piece to hop in the closer square
+               
+                     //if there is a piece but the next spot is blocked
+                     
+                  //if move is (- 1 cols) and (+ or - 1 row)
+                     //check to see if a piece is already in that location
+                     
+                  //else invalid move  
+            }
+            if(valid==false)
+            {
+               continue;
+            }
+            //MAKE CHANGES:
+            //if valid changes
+            //for loop through each hop    
+          } 
+            
+          //else if king
+          //{
+            //CHECK ALL HOPS: to make sure all are valid before changing matrix values
+            for(int i = 0; i < numHops; i++)
+            {               
+               //make sure next move does not place player out of the board area
+              
+               //make sure it is a valid king move
+                  //if move is (+ or - 2 cols) and (+ or - 2 rows)
+                     //if there is not a piece to hop in the closer square
+               
+                     //if there is a piece but the next spot is blocked
+                     
+                  //if move is (+ or - 1 cols) and (+ or - 1 row)
+                     //check to see if a piece is already in that location
+                     
+                  //else invalid move
+            }
+            if(valid==false)
+            {
+               continue;
+            }
+            //MAKE CHANGES:
+            //if valid changes
+            //for loop through each hop  
+        //}
+          }   
 
-         
+         System.out.println("Server Move  : " + serverMove);
          //Send valid move to other player
          outToClient.writeBytes(serverMove + "\n");
          
          //Repaint
          PrintBoard();
 
-         
          if(serverMove.equals("q") || clientMove.equals("q"))
             break;
-         
       }   
    }
    
@@ -249,3 +245,4 @@ class CheckersServer {
    }
 }
    
+
