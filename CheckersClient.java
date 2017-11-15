@@ -15,13 +15,15 @@ class CheckersClient {
    //Connect to Checkers Server 
       String clientMove = "", serverMove = "";
       char temp;
-      int fromCol, fromRow, toCol, toRow;
+      int fromCol, fromRow, toCol, toRow, numHops;
       boolean valid = true;
       
       //read user input
       BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
       
       //setup socket
+      //CHANGE LOCALHOST TO THE IP OF THE SERVER
+      //USE TWO VIRUS LAB COMPUTERS
       Socket clientSocket = new Socket("localhost", 6789);
       
        //setup data output stream
