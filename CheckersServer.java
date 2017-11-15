@@ -125,21 +125,25 @@ class CheckersServer {
           else if(pieces[fromCol][fromRow]==2)
           {
             //CHECK ALL HOPS: to make sure all are valid before changing matrix values
-            for(int i = 0; i < numHops; i++)
+            for(int i = 1; i < numHops+1; i++)
             {               
                //make sure next move does not place player out of the board area
-               
+               if(toRows[i]<0 || toRows[i]>8 || toCols[i]<0 || toCols[i]>8)
+               {
+                  valid = false;
+                  break;
+               }
                //make sure it is a valid pawn move
-
-                  //if move is (- 2 cols) and (+ or - 2 rows)
-                     //if there is not a piece to hop in the closer square
                
-                     //if there is a piece but the next spot is blocked
+               //if move is (- 2 cols) and (+ or - 2 rows)
+                   //if there is not a piece to hop in the closer square
+               
+                   //if there is a piece but the next spot is blocked
                      
-                  //if move is (- 1 cols) and (+ or - 1 row)
-                     //check to see if a piece is already in that location
+               //if move is (- 1 cols) and (+ or - 1 row)
+                   //check to see if a piece is already in that location
                      
-                  //else invalid move  
+                   //else invalid move  
             }
             if(valid==false)
             {
@@ -176,7 +180,7 @@ class CheckersServer {
             //if valid changes
             //for loop through each hop  
         //}
-          }   
+          }//end second while   
 
          System.out.println("Server Move  : " + serverMove);
          //Send valid move to other player
@@ -187,8 +191,8 @@ class CheckersServer {
 
          if(serverMove.equals("q") || clientMove.equals("q"))
             break;
-      }   
-   }
+      } //end first while  
+   }//end method
    
    public static void SetBoard() //initially sets up pieces on gameboard for a new game
    {
