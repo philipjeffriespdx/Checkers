@@ -134,7 +134,7 @@ class CheckersServer {
                //create substring
                serverHops = serverMove.substring(2);
                
-               //create array of toRow and toCol for number of hops
+               //create array of toRow and toCol for number of hops and give them their values
                int [] toRows = new int [numHops];
                int [] toCols = new int [numHops];
                int count = 1;
@@ -149,7 +149,7 @@ class CheckersServer {
                
                //if valid, for loop to go through each hop and make changes
                
-               //asdfasdfasdfdasdf
+               //
             
             }
                 
