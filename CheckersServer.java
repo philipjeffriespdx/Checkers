@@ -3,8 +3,6 @@ Philip Jeffries
 Networking and Security 
 Checkers Game
 */
-
-//I just copied my first networking lab to be able to build on top of it:
 import java.io.*;
 import java.net.*;
 import javax.swing.*;
@@ -90,12 +88,14 @@ class CheckersServer {
             moveLength = moveLength - 2;
             numHops = moveLength / 3; 
             
+            
             //get moving piece
             temp = serverMove.charAt(0);
             fromCol = temp - 65;
             temp = serverMove.charAt(1);
             fromRow = temp - 48;
-            
+            System.out.println("Server From  : " + fromCol + " " + fromRow);
+
             currentPiece = pieces[fromCol][fromRow];   
             //create substring
             serverHops = serverMove.substring(2);
@@ -111,8 +111,9 @@ class CheckersServer {
             int count = 1;
             for(int i = 1; i<numHops+1; i++)
             {
-               toRows[i] = serverHops.charAt(count);
-               toCols[i] = serverHops.charAt(count+1);
+               toCols[i] = serverHops.charAt(count) - 65;
+               toRows[i] = serverHops.charAt(count+1) - 48;
+               System.out.println("Server to: " + toCols[i] + " " + toRows[i]);
                count = count + 3;
             }
             
@@ -219,7 +220,7 @@ class CheckersServer {
                   }
                }
                //last set to original
-               pieces[toCols[numHops+1]][toRows[numHops+1]] = currentPiece;
+               pieces[toCols[numHops]][toRows[numHops]] = currentPiece;
             }   
           }//end else if pawn
           else //if king
@@ -249,7 +250,7 @@ class CheckersServer {
             //for loop through each hop  
         }//end else if king
          }//end second while   
-
+         
          System.out.println("Server Move  : " + serverMove);
          //Send valid move to other player
          outToClient.writeBytes(serverMove + "\n");
@@ -259,6 +260,7 @@ class CheckersServer {
 
          if(serverMove.equals("q") || clientMove.equals("q"))
             break;
+         
       } //end first while  
    }//end method
    
