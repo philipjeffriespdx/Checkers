@@ -175,16 +175,21 @@ class CheckersServer {
                   break;  
                }                     
                  
-            }
+            }//end for
             if(valid==false)
             {
                continue;
             }
             //MAKE CHANGES:
             //if valid changes
-            //for loop through each hop    
-          } 
-            
+            //for loop through each hop 
+            if(valid==true)
+            {
+               for(int i = 1; i < numHops+1; i++)
+               {
+               }//end for 
+            }   
+          }//end else if pawn
           //else if king
           //{
             //CHECK ALL HOPS: to make sure all are valid before changing matrix values
@@ -210,7 +215,7 @@ class CheckersServer {
             //MAKE CHANGES:
             //if valid changes
             //for loop through each hop  
-        //}
+        //}//end else if king
           }//end second while   
 
          System.out.println("Server Move  : " + serverMove);
