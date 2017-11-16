@@ -21,7 +21,7 @@ class CheckersServer {
       //Wait for Checkers Client 
       String clientMove = "", serverMove = "", serverHops = "";
       char temp;
-      int fromCol, fromRow, toCol, toRow, moveLength, numHops, hopedCol, hopedRow;
+      int fromCol, fromRow, toCol, toRow, moveLength, numHops, hopedCol, hopedRow, currentPiece;
       //for more than one hop use toRows[] and toCols[]
       boolean valid = false, hop = false, alreadyhoped = false, alreadymoved = false;
         
@@ -95,15 +95,16 @@ class CheckersServer {
             fromCol = temp - 65;
             temp = serverMove.charAt(1);
             fromRow = temp - 48;
-               
+            
+            currentPiece = pieces[fromCol][fromRow];   
             //create substring
             serverHops = serverMove.substring(2);
                
             //create array of toRow and toCol for number of hops and give them their values
             int [] toRows = new int [numHops+1];
             int [] toCols = new int [numHops+1];
-            int [] thingstohop = new int [numHops-1];
-            
+            int [] thingstohopCol = new int [numHops-1];
+            int [] thingstohopRow = new int [numHops-1];
             toRows[0] = fromRow;
             toCols[0] = fromCol;
             
@@ -166,6 +167,8 @@ class CheckersServer {
                      System.out.println("Error Pawn: There is no piece in the square you are tyring to hop over");
                      break;
                   }
+                  thingstohopCol[i-1] = hopedCol;
+                  thingstohopRow[i-1] = hopedRow;
                   alreadyhoped = true;
                } //else if move is (- 1 cols) and (+ or - 1 row)
                else if(toCols[i]==toCols[i-1]-1 && (toRows[i]==toRows[i-1]-1 || toRows[i]==toRows[i-1]+1) )
@@ -183,7 +186,6 @@ class CheckersServer {
                      System.out.println("Error Pawn: There is a piece in the square you are trying to move to");
                      break;
                   }
-                  
                   alreadymoved = true;   
                } //else
                else
@@ -200,18 +202,24 @@ class CheckersServer {
             }
             //MAKE CHANGES:
             //if valid changes
-            //for loop through each hop 
-            if(valid==true)
+            if(valid==false)
+            {
+               continue;
+            }
+            else if (valid==true)
             {
                //first set to zero
-               
+               pieces[fromCol][fromRow] = 0;
                //all hoped set to zero
-               
-               //last set to original
-               for(int i = 1; i < numHops+1; i++)
+               if(thingstohopCol.length > 0) //if there are are things to hop
                {
-                  
-               }//end for 
+                  for(int i = 0; i<thingstohopCol.length; i++)//remove all of them 
+                  {
+                     pieces[thingstohopCol[i]][thingstohopRow[i]] = 0;
+                  }
+               }
+               //last set to original
+               pieces[toCols[numHops+1]][toRows[numHops+1]] = currentPiece;
             }   
           }//end else if pawn
           else //if king
