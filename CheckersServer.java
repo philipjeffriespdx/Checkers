@@ -21,7 +21,7 @@ class CheckersServer {
       //Wait for Checkers Client 
       String clientMove = "", serverMove = "", serverHops = "";
       char temp;
-      int fromCol, fromRow, toCol, toRow, moveLength, numHops;
+      int fromCol, fromRow, toCol, toRow, moveLength, numHops, hopedCol, hopedRow;
       //for more than one hop use toRows[] and toCols[]
       boolean valid = false, hop = false;
         
@@ -120,6 +120,7 @@ class CheckersServer {
           if(pieces[fromCol][fromRow]!=2 && pieces[fromCol][fromRow]!=4)
           {
                valid = false;
+               System.out.println("Error: There is no piecec at the place you selected");
                continue;
           }
           else if(pieces[fromCol][fromRow]==2)
@@ -131,19 +132,49 @@ class CheckersServer {
                if(toRows[i]<0 || toRows[i]>8 || toCols[i]<0 || toCols[i]>8)
                {
                   valid = false;
+                  System.out.println("Error Pawn: that move is out of bounds");
                   break;
                }
-               //make sure it is a valid pawn move
-               
+             //make sure it is a valid pawn move
                //if move is (- 2 cols) and (+ or - 2 rows)
-                   //if there is not a piece to hop in the closer square
-               
-                   //if there is a piece but the next spot is blocked
-                     
-               //if move is (- 1 cols) and (+ or - 1 row)
-                   //check to see if a piece is already in that location
-                     
-                   //else invalid move  
+               if(toCols[i]==toCols[i-1]-2 && (toRows[i]==toRows[i-1]-2 || toRows[i]==toRows[i-1]+2) )
+               {
+                  //if there is a piece but the next spot is blocked
+                  if(pieces[toCols[i]][toRows[i]]!=0)
+                  {
+                     valid = false;
+                     System.out.println("Error Pawn: There is a piece in the square you are trying to hop to");
+                     break;
+                  }
+                  //space to hop over
+                  // col or row of hoped piece: from + (to - from) / 2
+                  hopedCol = toCols[i-1] + (toCols[i] - toCols[i-1]) / 2;
+                  hopedRow = toRows[i-1] + (toRows[i] - toRows[i-1]) / 2;
+                  //if there is not a piece to hop in the closer square
+                  if(pieces[hopedCol][hopedRow]!=1 && pieces[hopedCol][hopedRow]!=3 )
+                  {
+                     valid = false;
+                     System.out.println("Error Pawn: There is no piece in the square you are tyring to hop over");
+                     break;
+                  }
+               } //else if move is (- 1 cols) and (+ or - 1 row)
+               else if(toCols[i]==toCols[i-1]-1 && (toRows[i]==toRows[i-1]-1 || toRows[i]==toRows[i-1]+1) )
+               {
+                  //check to see if a piece is already in that location
+                  if(pieces[toCols[i]][toRows[i]]!=0)
+                  {
+                     valid = false;
+                     System.out.println("Error Pawn: There is a piece in the square you are trying to move to");
+                     break;
+                  }   
+               } //else
+               else
+               {
+                  System.out.println("Error Pawn: That move is out of the scope of a pawn");
+                  valid = false;
+                  break;  
+               }                     
+                 
             }
             if(valid==false)
             {
