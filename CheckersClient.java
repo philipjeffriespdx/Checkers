@@ -18,6 +18,10 @@ class CheckersClient {
       int fromCol, fromRow, toCol, toRow, moveLength, numHops, hopedCol, hopedRow, currentPiece;
       //for more than one hop use toRows[] and toCols[]
       boolean valid = false, hop = false, alreadyhoped = false, alreadymoved = false;
+      
+      //server variables
+      String serverFrom, sNumServerHops, currentServerHop, serverDestination;
+      int numServerHops = 0, Col, Row;
 
       
       //read user input
@@ -66,8 +70,8 @@ class CheckersClient {
             //create array of toRow and toCol for number of hops and give them their values
             int [] toRows = new int [numHops+1];
             int [] toCols = new int [numHops+1];
-            int [] thingstohopCol = new int [numHops-1];
-            int [] thingstohopRow = new int [numHops-1];
+            int [] thingstohopCol = new int [numHops];
+            int [] thingstohopRow = new int [numHops];
             toRows[0] = fromRow;
             toCols[0] = fromCol;
             
@@ -123,8 +127,11 @@ class CheckersClient {
                   }
                   //space to hop over
                   // col or row of hoped piece: from + (to - from) / 2
+                  System.out.println("toCols[i-1] and toCols[i]: " + toCols[i-1] + " " + toCols[i]);
+                  System.out.println("toRows[i-1] and toRows[i]: " + toRows[i-1] + " " + toRows[i]);
                   hopedCol = toCols[i-1] + (toCols[i] - toCols[i-1]) / 2;
                   hopedRow = toRows[i-1] + (toRows[i] - toRows[i-1]) / 2;
+                  System.out.println("HopedCol and HopedRow: " + hopedCol + " " + hopedRow);
                   //if there is not a piece to hop in the closer square
                   if(pieces[hopedCol][hopedRow]!=2 && pieces[hopedCol][hopedRow]!=4 )
                   {
@@ -170,12 +177,15 @@ class CheckersClient {
             }
             else if (valid==true)
             {
+               System.out.println("Writing to server 180");
                //first set to zero
                pieces[fromCol][fromRow] = 0;
+               System.out.println("Sending to Server Origin: " + fromCol + "" + fromRow);
                outToServer.writeBytes(fromCol + "" + fromRow + '\n');
                
                trash = inFromServer.readLine();
                //all hoped set to zero
+               System.out.println("Sending to Server NumberOfHops: " + thingstohopCol.length);
                outToServer.writeBytes(thingstohopCol.length + "" + '\n');
                
                trash = inFromServer.readLine();
@@ -184,12 +194,14 @@ class CheckersClient {
                   for(int i = 0; i<thingstohopCol.length; i++)//remove all of them 
                   {
                      pieces[thingstohopCol[i]][thingstohopRow[i]] = 0;
+                     System.out.println("Sending to Server HOP: " + thingstohopCol[i] + "" + thingstohopRow[i]);
                      outToServer.writeBytes(thingstohopCol[i] + "" + thingstohopRow[i] + '\n');
                      trash = inFromServer.readLine();
                   }
                }
                //last set to original
                pieces[toCols[numHops]][toRows[numHops]] = currentPiece;
+               System.out.println("Sending to Server Destination: " + toCols[numHops] + "" + toRows[numHops]);
                outToServer.writeBytes(toCols[numHops] + "" + toRows[numHops] + '\n');
                trash = inFromServer.readLine();
             }   
@@ -220,23 +232,74 @@ class CheckersClient {
                //if valid changes
                //for loop through each hop  
             }//end else if king
+            
+            
+            
          }//end second while   
+     //END CLIENT MOVE
+     //********************* START SERVER MOVE ****************************************************************************
+         PrintBoard();
+
+         //Get Client Move move
+         System.out.println("Waiting for SERVER... ");
+         //receive ORIGIN: COL " " ROW
+         serverFrom = inFromServer.readLine();
+         if(serverFrom.equals("q") || serverFrom.equals("q"))
+            break;
+         if(serverFrom.length() < 2)
+         {
+            System.out.println("ServerFrom is incorrect at 243: " + serverFrom);
+            outToServer.writeBytes("y" + "\n");
+         }
+         temp = serverFrom.charAt(0);
+         fromCol = temp - 48;
+         temp = serverFrom.charAt(1);
+         fromRow = temp - 48;
          
-         //outToServer.writeBytes(clientMove + '\n');
+         outToServer.writeBytes("y" + "\n");
          
+         currentPiece = pieces[fromCol][fromRow];
+         pieces[fromCol][fromRow] = 0;
+         
+         //receive HOPS
+         sNumServerHops = inFromServer.readLine();
+         numServerHops = Integer.valueOf(sNumServerHops);
+         
+         outToServer.writeBytes("y" + "\n");
+         
+         //loop through num client hops
+         if(numServerHops > 0)
+         {
+            for(int i = 0; i < numServerHops; i++)
+            {
+               //receive things that will be hoped COL " " ROW
+               serverHops = inFromServer.readLine();
+               temp = serverHops.charAt(0);
+               Col = temp - 48;
+               temp = serverHops.charAt(1);
+               Row = temp - 48;
+               pieces[Col][Row] = 0;
+               outToServer.writeBytes("y" + "\n");
+            }
+         }//end if numClientHops
+         
+         //receive DESTINATION:
+         serverDestination = inFromServer.readLine();
+         temp = serverDestination.charAt(0);
+         toCol = temp - 48;
+         temp = serverDestination.charAt(1);
+         toRow = temp - 48;
+         
+         //outToServer.writeBytes("y" + "\n");
+         
+         pieces[toCol][toRow] = currentPiece;
+         
+         System.out.println("Server Move: " + serverFrom + " to " + serverDestination);
+         
+         //Repaint
          PrintBoard();
          
-         //recieve move
-         System.out.println("Waiting for Server... ");
-         serverMove = inFromServer.readLine();
-         System.out.println("Server Move: " + serverMove + "");
-         
-         if(serverMove.equals("q") || clientMove.equals("q"))
-            break;
-
-      }
-      //
-      
+      }//End first while
 //turns pawns to kings
 //game over when no other pieces left
       //close socket

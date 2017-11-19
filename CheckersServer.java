@@ -16,10 +16,12 @@ import java.awt.event.*;
 class CheckersServer {
    public static int [][] pieces = new int [8][8];
    public static void main(String argv[]) throws Exception {
-      //Wait for Checkers Client 
+      //variables
       String clientMove = "", serverMove = "", serverHops = "", clientHops = "";
+      String clientFrom, sNumClientHops, currentClientHop, clientDestination, trash;
+      int numClientHops = 0, Col, Row;
       char temp;
-      int fromCol, fromRow, toCol, toRow, Col, Row, moveLength, numHops, hopedCol, hopedRow, currentPiece;
+      int fromCol, fromRow, toCol, toRow, moveLength, numHops, hopedCol, hopedRow, currentPiece;
       //for more than one hop use toRows[] and toCols[]
       boolean valid = false, hop = false, alreadyhoped = false, alreadymoved = false;
         
@@ -53,129 +55,61 @@ class CheckersServer {
       PrintBoard();
       
       //continue to receive and send data
+      //LOOP OF MOVES ::
       while (true) { 
-         //LOOP OF MOVES ::
-         //Wait for Client move
-         String clientFrom, sNumClientHops, currentClientHop, clientDestination;
-         int numClientHops = 0;
-         
+         //Get Client Move move
          System.out.println("Waiting for Client... ");
-         //receive original COL " " ROW
+         //receive ORIGIN: COL " " ROW
          clientFrom = inFromClient.readLine();
          temp = clientFrom.charAt(0);
          fromCol = temp - 48;
          temp = clientFrom.charAt(1);
          fromRow = temp - 48;
          
+         System.out.println("Reply 1");
          outToClient.writeBytes("y" + "\n");
          
          currentPiece = pieces[fromCol][fromRow];
          pieces[fromCol][fromRow] = 0;
          
-         //just a number
+         //receive HOPS
          sNumClientHops = inFromClient.readLine();
          numClientHops = Integer.valueOf(sNumClientHops);
          
+         System.out.println("Reply 2");
          outToClient.writeBytes("y" + "\n");
          
-         //num client hops
+         //loop through num client hops
          if(numClientHops > 0)
          {
             for(int i = 0; i < numClientHops; i++)
             {
                //receive things that will be hoped COL " " ROW
                clientHops = inFromClient.readLine();
-               temp = clientFrom.charAt(0);
+               System.out.println("Client Hops are: " + clientHops);
+               temp = clientHops.charAt(0);
                Col = temp - 48;
-               temp = clientFrom.charAt(1);
+               temp = clientHops.charAt(1);
                Row = temp - 48;
                pieces[Col][Row] = 0;
+               System.out.println("Reply " + (i+3));
                outToClient.writeBytes("y" + "\n");
             }
          }//end if numClientHops
          
-         //pass destination
+         //receive DESTINATION:
          clientDestination = inFromClient.readLine();
          temp = clientDestination.charAt(0);
          toCol = temp - 48;
          temp = clientDestination.charAt(1);
          toRow = temp - 48;
          
+         System.out.println("Reply Last Y");
          outToClient.writeBytes("y" + "\n");
          
          pieces[toCol][toRow] = currentPiece;
          
-         
-         
          System.out.println("Client Move: " + clientFrom + " to " + clientDestination);
-         
-         /* this would  be like doing it the same way as imput
-         moveLength = clientMove.length();
-         moveLength = moveLength - 2;
-         numHops = moveLength / 3; 
-            
-         System.out.println("NumHops is: " + numHops); 
-         //get moving piece
-         temp = clientMove.charAt(0);
-         fromCol = temp - 65;
-         temp = clientMove.charAt(1);
-         fromRow = temp - 48;
-         System.out.println("Server From  : " + fromCol + " " + fromRow);
-
-         currentPiece = pieces[fromCol][fromRow];   
-         //create substring
-         clientHops = clientMove.substring(2);
-               
-         //create array of toRow and toCol for number of hops and give them their values
-         int [] toRows = new int [numHops+1];
-         int [] toCols = new int [numHops+1];
-         int [] thingstohopCol = new int [numHops];
-         int [] thingstohopRow = new int [numHops];
-         toRows[0] = fromRow;
-         toCols[0] = fromCol;
-            
-         int count = 1;
-         for(int i = 1; i<numHops+1; i++)
-         {
-            toCols[i] = clientHops.charAt(count) - 65;
-            toRows[i] = clientHops.charAt(count+1) - 48;
-            System.out.println("Client to: " + toCols[i] + " " + toRows[i]);
-            count = count + 3;
-         }
-         for(int i = 1; i<numHops+1; i++)
-         {
-            if(pieces[fromCol][fromRow]==1)
-            {
-               if(toCols[i]==toCols[i-1]+2 && (toRows[i]==toRows[i-1]-2 || toRows[i]==toRows[i-1]+2) )
-               {
-                   // col or row of hoped piece: from + (to - from) / 2
-                  System.out.println("toCols[i-1] and toCols[i]: " + toCols[i-1] + " " + toCols[i]);
-                  System.out.println("toRows[i-1] and toRows[i]: " + toCols[i-1] + " " + toCols[i]);
-                  hopedCol = toCols[i-1] + (toCols[i] - toCols[i-1]) / 2;
-                  hopedRow = toRows[i-1] + (toRows[i] - toRows[i-1]) / 2;
-                  System.out.println("HopedCol and HopedRow: " + hopedCol + " " + hopedRow);
-                  //if there is not a piece to hop in the closer square
-                  if(pieces[hopedCol][hopedRow]!=1 && pieces[hopedCol][hopedRow]!=3 )
-                  {
-                     valid = false;
-                     System.out.println("Error Pawn: There is no piece in the square you are tyring to hop over");
-                     break;
-                  }
-                  thingstohopCol[i-1] = hopedCol;
-                  thingstohopRow[i-1] = hopedRow;
-                  alreadyhoped = true;
-               } //else if move is (- 1 cols) and (+ or - 1 row)
-            }
-            else if 
-         }
-         */
-         //Update Matrix
-         
-         
-         
-         
-         
-         
          
          //Repaint
          PrintBoard();
@@ -315,19 +249,29 @@ class CheckersServer {
             else if (valid==true)
             {
                //first set to zero
+               System.out.println("Writing to client 247");
                pieces[fromCol][fromRow] = 0;
+               outToClient.writeBytes(fromCol + "" + fromRow + '\n');
+               
+               trash = inFromClient.readLine();
                //all hoped set to zero
+               outToClient.writeBytes(thingstohopCol.length + "" + '\n');
+               
+               trash = inFromClient.readLine();
                if(thingstohopCol.length > 0) //if there are are things to hop
                {
                   for(int i = 0; i<thingstohopCol.length; i++)//remove all of them 
                   {
-                     System.out.println("We tried to hop: " + thingstohopCol[i] + " " + thingstohopRow[i]);
-                     
                      pieces[thingstohopCol[i]][thingstohopRow[i]] = 0;
+                     outToClient.writeBytes(thingstohopCol[i] + "" + thingstohopRow[i] + '\n');
+                     trash = inFromClient.readLine();
                   }
                }
                //last set to original
                pieces[toCols[numHops]][toRows[numHops]] = currentPiece;
+               outToClient.writeBytes(toCols[numHops] + "" + toRows[numHops] + '\n');
+               
+               //trash = inFromClient.readLine();
             }   
           }//end else if pawn
           else //if king
@@ -360,7 +304,7 @@ class CheckersServer {
          
          System.out.println("Server Move  : " + serverMove);
          //Send valid move to other player
-         outToClient.writeBytes(serverMove + "\n");
+         //outToClient.writeBytes(serverMove + "\n");
          
          //Repaint
          PrintBoard();
