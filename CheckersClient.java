@@ -95,10 +95,8 @@ class CheckersClient {
                System.out.println("Error: There is no piecec at the place you selected, or it is not your piece");
                continue;
           }
-          else if(pieces[fromCol][fromRow]==1)
+          else if(pieces[fromCol][fromRow]==1) //CHECK ALL HOPS: to make sure all are valid before changing matrix values
           {
-//FROM HERE ON MAKE CHANGES TO  EVERTHING TO MAKE SURE IT IS FOR CLIENT AND NOT SERVER NUMBERS
-            //CHECK ALL HOPS: to make sure all are valid before changing matrix values
             for(int i = 1; i < numHops+1; i++)
             {               
                //make sure next move does not place player out of the board area
@@ -165,18 +163,41 @@ class CheckersClient {
                   System.out.println("Error Pawn: That move is out of the scope of a pawn");
                   valid = false;
                   break;  
-               }                     
-                 
-            }//end for
-            
-            //MAKE CHANGES:
-            //if valid changes
+               }                        
+            }//end pawn hop for
             if(valid==false)
             {
                continue;
-            }
-            else if (valid==true)
-            {
+            }  
+          }//end else if pawn
+          else //if king 3
+          { 
+             //CHECK ALL HOPS: to make sure all are valid before changing matrix values
+             for(int i = 0; i < numHops; i++)
+             {               
+                //make sure next move does not place player out of the board area
+               
+                //make sure it is a valid king move
+                   //if move is (+ or - 2 cols) and (+ or - 2 rows)
+                      //if there is not a piece to hop in the closer square
+                
+                      //if there is a piece but the next spot is blocked
+                      
+                   //if move is (+ or - 1 cols) and (+ or - 1 row)
+                      //check to see if a piece is already in that location
+                      
+                   //else invalid move
+             }
+             if(valid==false)
+             {
+                continue;
+             }
+              
+          }//end else if king
+          
+          //SEND CHANGES TO SERVER
+          if(valid==true && (pieces[fromCol][fromRow]==1 || pieces[fromCol][fromRow]==3))
+          {
                System.out.println("Writing to server 180");
                //first set to zero
                pieces[fromCol][fromRow] = 0;
@@ -204,37 +225,8 @@ class CheckersClient {
                System.out.println("Sending to Server Destination: " + toCols[numHops] + "" + toRows[numHops]);
                outToServer.writeBytes(toCols[numHops] + "" + toRows[numHops] + '\n');
                trash = inFromServer.readLine();
-            }   
-          }//end else if pawn
-            else //if king 3
-            { 
-               //CHECK ALL HOPS: to make sure all are valid before changing matrix values
-               for(int i = 0; i < numHops; i++)
-               {               
-                  //make sure next move does not place player out of the board area
-                 
-                  //make sure it is a valid king move
-                     //if move is (+ or - 2 cols) and (+ or - 2 rows)
-                        //if there is not a piece to hop in the closer square
-                  
-                        //if there is a piece but the next spot is blocked
-                        
-                     //if move is (+ or - 1 cols) and (+ or - 1 row)
-                        //check to see if a piece is already in that location
-                        
-                     //else invalid move
-               }
-               if(valid==false)
-               {
-                  continue;
-               }
-               //MAKE CHANGES:
-               //if valid changes
-               //for loop through each hop  
-            }//end else if king
-            
-            
-            
+          } //end making changes
+          
          }//end second while   
      //END CLIENT MOVE
      //********************* START SERVER MOVE ****************************************************************************
@@ -309,16 +301,13 @@ class CheckersClient {
    public static void SetBoard() //initially sets up pieces on gameboard for a new game
    {
       int temp = 0;
-      /*
-      Empty = 0
+      /* Empty = 0
       Red Pawn = 1
       Black Pawn = 2
       Red King = 3
-      Black King = 4
-      */
-      // pieces[columns][rows]
-      
-      //set all zeros
+      Black King = 4   
+      pieces[columns][rows]
+      //set all zeros */
       for(int i = 0; i<8; i++)
       {
          for(int j = 0; j<8; j++)
