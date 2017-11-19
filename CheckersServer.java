@@ -335,9 +335,13 @@ class CheckersServer {
                {
                   for(int i = 0; i<thingstohopCol.length; i++)//remove all of them 
                   {
-                     pieces[thingstohopCol[i]][thingstohopRow[i]] = 0;
-                     outToClient.writeBytes(thingstohopCol[i] + "" + thingstohopRow[i] + '\n');
-                     trash = inFromClient.readLine();
+                     if(thingstohopCol[i]!=0 && thingstohopRow[i]!=0)
+                     {
+                        pieces[thingstohopCol[i]][thingstohopRow[i]] = 0;
+                     }
+                        outToClient.writeBytes(thingstohopCol[i] + "" + thingstohopRow[i] + '\n');
+                        trash = inFromClient.readLine();
+                     
                   }
                }
                //last set to original

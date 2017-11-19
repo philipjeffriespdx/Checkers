@@ -55,7 +55,6 @@ class CheckersClient {
             moveLength = moveLength - 2;
             numHops = moveLength / 3; 
             
-            
             //get moving piece
             temp = clientMove.charAt(0);
             fromCol = temp - 65;
@@ -212,12 +211,16 @@ class CheckersClient {
                trash = inFromServer.readLine();
                if(thingstohopCol.length > 0) //if there are are things to hop
                {
-                  for(int i = 0; i<thingstohopCol.length; i++)//remove all of them 
+                  for(int i = 0; i<thingstohopCol.length ; i++)//remove all of them 
                   {
-                     pieces[thingstohopCol[i]][thingstohopRow[i]] = 0;
-                     System.out.println("Sending to Server HOP: " + thingstohopCol[i] + "" + thingstohopRow[i]);
-                     outToServer.writeBytes(thingstohopCol[i] + "" + thingstohopRow[i] + '\n');
-                     trash = inFromServer.readLine();
+                     if(thingstohopCol[i]!=0 && thingstohopRow[i]!=0)
+                     {
+                        pieces[thingstohopCol[i]][thingstohopRow[i]] = 0;
+                     }
+                        System.out.println("Sending to Server HOP: " + thingstohopCol[i] + "" + thingstohopRow[i]);
+                        outToServer.writeBytes(thingstohopCol[i] + "" + thingstohopRow[i] + '\n');
+                        trash = inFromServer.readLine();
+                     
                   }
                }
                //last set to original
