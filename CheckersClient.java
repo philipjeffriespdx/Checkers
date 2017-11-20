@@ -392,22 +392,75 @@ class CheckersClient {
       }
       
       //Testing
-      pieces[4][2] = 1;
+      //pieces[1][1] = 2;
+      //pieces[0][2] = 0;
    }
    
    public static void PrintBoard()
    {
-      System.out.println();
-      System.out.println("    A B C D E F G H");
+      boolean KeepPlaying = true, ServerAlive = false, ClientAlive = false;
       for(int i = 0; i<8; i++)
       {
-         System.out.print(i + ":  ");
+         if(pieces[0][i]==2)
+         {
+            pieces[0][i]=4;
+         }
+         if(pieces[7][i]==1)
+         {
+            pieces[7][i]=3;
+         }
+
          for(int j = 0; j<8; j++)
          {
-           System.out.print(pieces[j][i] + " ");         
+            if(pieces[j][i] == 2 || pieces[j][i] == 4)
+            {
+               ServerAlive = true;
+            }
+            if(pieces[j][i] == 1 || pieces[j][i] == 3)
+            {
+               ClientAlive = true;
+            }
          }
+      }
+      
+      if(!ServerAlive)
+      {
+         KeepPlaying = false;
+         System.out.println("Player 2 Wins!");
+         try{
+            Thread.sleep(10);
+         }
+         catch(InterruptedException e){
+            System.out.println("");
+         }
+         System.exit(0);
+      }
+      else if(!ClientAlive)
+      {
+         KeepPlaying = false;
+         System.out.println("Player 1 Wins!");
+         try{
+            Thread.sleep(10);
+         }
+         catch(InterruptedException e){
+            System.out.println("");
+         }
+         System.exit(0);
+      }
+      
+      if(KeepPlaying)
+      {
          System.out.println();
+         System.out.println("    A B C D E F G H");
+         for(int i = 0; i<8; i++)
+         {
+            System.out.print(i + ":  ");
+            for(int j = 0; j<8; j++)
+            {
+              System.out.print(pieces[j][i] + " ");         
+            }
+            System.out.println();
+         }
       }
    }
-
 }

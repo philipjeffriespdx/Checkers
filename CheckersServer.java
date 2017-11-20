@@ -398,12 +398,13 @@ class CheckersServer {
       {
          for(int j = i%2; j<8; j+=2) //rows
          {
-            pieces[i][j] = 4;
+            pieces[i][j] = 2;
          }
       }
       
       //Testing
-      pieces[4][2] = 1;
+      //pieces[1][1] = 2;
+      //pieces[0][2] = 0;
       
       
    }
@@ -413,6 +414,15 @@ class CheckersServer {
       boolean KeepPlaying = true, ServerAlive = false, ClientAlive = false;
       for(int i = 0; i<8; i++)
       {
+         if(pieces[0][i]==2)
+         {
+            pieces[0][i]=4;
+         }
+         if(pieces[7][i]==1)
+         {
+            pieces[7][i]=3;
+         }
+
          for(int j = 0; j<8; j++)
          {
             if(pieces[j][i] == 2 || pieces[j][i] == 4)
