@@ -108,7 +108,7 @@ class CheckersServer {
          temp = clientDestination.charAt(1);
          toRow = temp - 48;
          
-         System.out.println("Reply Last Y");
+         //System.out.println("Reply Last Y");
          outToClient.writeBytes("y" + "\n");
          
          pieces[toCol][toRow] = currentPiece;
