@@ -353,8 +353,6 @@ class CheckersServer {
         }//end second while   
          
          System.out.println("Server Move  : " + serverMove);
-         //Send valid move to other player
-         //outToClient.writeBytes(serverMove + "\n");
          
          //Repaint
          PrintBoard();

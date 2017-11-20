@@ -172,27 +172,80 @@ class CheckersClient {
           else //if king 3
           { 
              //CHECK ALL HOPS: to make sure all are valid before changing matrix values
-             for(int i = 0; i < numHops; i++)
-             {               
-                //make sure next move does not place player out of the board area
-               
-                //make sure it is a valid king move
-                   //if move is (+ or - 2 cols) and (+ or - 2 rows)
-                      //if there is not a piece to hop in the closer square
-                
-                      //if there is a piece but the next spot is blocked
-                      
-                   //if move is (+ or - 1 cols) and (+ or - 1 row)
-                      //check to see if a piece is already in that location
-                      
-                   //else invalid move
-             }
-             if(valid==false)
-             {
-                continue;
-             }
-              
+            for(int i = 1; i < numHops + 1; i++)
+            {               
+               //make sure next move does not place player out of the board area
+               if(toRows[i]<0 || toRows[i]>8 || toCols[i]<0 || toCols[i]>8)
+               {
+                  valid = false;
+                  System.out.println("Error King: that move is out of bounds");
+                  break;
+               }
+             //make sure it is a valid pawn move
+               //if move is (- 2 cols) and (+ or - 2 rows)
+               if((toCols[i]==toCols[i-1]-2 || toCols[i]==toCols[i-1]+2) && (toRows[i]==toRows[i-1]-2 || toRows[i]==toRows[i-1]+2) )
+               {
+                  if(alreadymoved)
+                  {
+                     valid = false;
+                     System.out.println("Error King: You cannot move then hop in one turn");
+                     break;
+                  }
+                  //if there is a piece but the next spot is blocked
+                  if(pieces[toCols[i]][toRows[i]]!=0)
+                  {
+                     valid = false;
+                     System.out.println("Error King: There is a piece in the square you are trying to hop to");
+                     break;
+                  }
+                  //space to hop over
+                  // col or row of hoped piece: from + (to - from) / 2
+                  System.out.println("toCols[i-1] and toCols[i]: " + toCols[i-1] + " " + toCols[i]);
+                  System.out.println("toRows[i-1] and toRows[i]: " + toCols[i-1] + " " + toCols[i]);
+                  hopedCol = toCols[i-1] + (toCols[i] - toCols[i-1]) / 2;
+                  hopedRow = toRows[i-1] + (toRows[i] - toRows[i-1]) / 2;
+                  System.out.println("HopedCol and HopedRow: " + hopedCol + " " + hopedRow);
+                  //if there is not a piece to hop in the closer square
+                  if(pieces[hopedCol][hopedRow]!=2 && pieces[hopedCol][hopedRow]!=4 )
+                  {
+                     valid = false;
+                     System.out.println("Error King: There is no piece in the square you are tyring to hop over");
+                     break;
+                  }
+                  thingstohopCol[i-1] = hopedCol;
+                  thingstohopRow[i-1] = hopedRow;
+                  alreadyhoped = true;
+               } //else if move is (- 1 cols) and (+ or - 1 row)
+               else if((toCols[i]==toCols[i-1]-1 || toCols[i]==toCols[i-1]+1) && (toRows[i]==toRows[i-1]-1 || toRows[i]==toRows[i-1]+1) )
+               {
+                  if(alreadyhoped || alreadymoved)
+                  {
+                     valid = false;
+                     System.out.println("Error King: You cannot move after you have already moved or hoped");
+                     break;
+                  }
+                  //check to see if a piece is already in that location
+                  if(pieces[toCols[i]][toRows[i]]!=0)
+                  {
+                     valid = false;
+                     System.out.println("Error King: There is a piece in the square you are trying to move to");
+                     break;
+                  }
+                  alreadymoved = true;   
+               } 
+               else
+               {
+                  System.out.println("Error King: That move is out of the scope of a pawn");
+                  valid = false;
+                  break;  
+               }                       
+            }//end for
+            if(valid==false)
+            {
+               continue;
+            } 
           }//end else if king
+
           
           //SEND CHANGES TO SERVER
           if(valid==true && (pieces[fromCol][fromRow]==1 || pieces[fromCol][fromRow]==3))
