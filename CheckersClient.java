@@ -217,10 +217,9 @@ class CheckersClient {
                      {
                         pieces[thingstohopCol[i]][thingstohopRow[i]] = 0;
                      }
-                        System.out.println("Sending to Server HOP: " + thingstohopCol[i] + "" + thingstohopRow[i]);
-                        outToServer.writeBytes(thingstohopCol[i] + "" + thingstohopRow[i] + '\n');
-                        trash = inFromServer.readLine();
-                     
+                     System.out.println("Sending to Server HOP: " + thingstohopCol[i] + "" + thingstohopRow[i]);
+                     outToServer.writeBytes(thingstohopCol[i] + "" + thingstohopRow[i] + '\n');
+                     trash = inFromServer.readLine();
                   }
                }
                //last set to original
@@ -273,7 +272,10 @@ class CheckersClient {
                Col = temp - 48;
                temp = serverHops.charAt(1);
                Row = temp - 48;
-               pieces[Col][Row] = 0;
+               if(Col!=0 && Row!=0)
+               {
+                  pieces[Col][Row] = 0;
+               }
                outToServer.writeBytes("y" + "\n");
             }
          }//end if numClientHops
